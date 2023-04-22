@@ -1,9 +1,13 @@
 {
     "version": 2,
-    "env": {
-        "CI": "true"
-      },
-      "command": "npm ci && npm run build",
+
+        "build": {
+          "env": {
+            "CI": "true"
+          },
+          "command": "npm ci && npm run build"
+        },
+    
     "builds": [
         
       {
