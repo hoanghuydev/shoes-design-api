@@ -1,13 +1,11 @@
 {
     "version": 2,
 
-        "build": {
           "env": {
             "CI": "true"
           },
-          "command": "npm ci && npm run build"
-        },
-    
+         
+          "installCommand" : "npm ci",
     "builds": [
         
       {
@@ -16,7 +14,7 @@
       }
     ],
     
-    "installCommand" : "npm ci",
+   
     "routes": [
       {
         "src": "/(.*)",
