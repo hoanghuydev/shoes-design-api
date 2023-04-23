@@ -1,12 +1,7 @@
 {
     "version": 2,
     "installCommand" : "npm install --force",
-    "env": {
-      "MONGODB_URL" : "mongodb+srv://21130386:huylat579@cluster0.yvvw6up.mongodb.net/?retryWrites=true&w=majority",
-      "SENDGRID_API_KEY" : "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",
-      "ACCESS_TOKEN_KEY" : "Afd132cZam",
-      "REFRESH_TOKEN_KEY" : "SW3214cmaDFg"
-    },
+   
     "builds": [
       {
         "src": "./src/index.js",
