@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "nodemon ./src/index.js 3000"
+    "start": "nodemon ./src/index.js 3000",
+    "install": "npm i --force"
   },
   "dependencies": {
     "@sendgrid/mail": "^7.7.0",
