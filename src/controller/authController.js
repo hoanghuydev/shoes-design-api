@@ -61,7 +61,7 @@ class AuthController {
             res.status(500).json(error);
         }
     }
-    async vetifyOTPAndCreateUser(req, res, next) {
+    async signUp(req, res, next) {
         const email = req.body.email;
         const salt = await bcrypt.genSalt(10);
         const hasedPassword = await bcrypt.hash(req.body.password, salt);
@@ -104,7 +104,7 @@ class AuthController {
         );
     }
 
-    async login(req, res, next) {
+    async signIn(req, res, next) {
         const user = await User.findOne({ email: req.body.email });
         if (!user) {
             return res.json({
@@ -194,6 +194,9 @@ class AuthController {
                 res.status(200).json(user)
             )
         );
+    }
+    async removeUser(req, res) {
+        User.deleteOne({ _id: req.params.id });
     }
 }
 module.exports = new AuthController();

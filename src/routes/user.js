@@ -10,9 +10,13 @@ router.post(
     userController.cartHistory
 );
 router.delete('/cart/remove', vetifyToken.forCart, userController.removeItems);
-router.post('/cart/buy', vetifyToken.forBuyItem, userController.buyItems);
 router.post(
-    '/cart/purchase/repurchase',
+    '/cart/:userID/buy',
+    vetifyToken.forBuyItem,
+    userController.buyItems
+);
+router.post(
+    '/cart/:id/repurchase',
     vetifyToken.forCart,
     userController.repurchaseItem
 );

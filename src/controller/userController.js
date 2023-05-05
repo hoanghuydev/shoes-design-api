@@ -1,13 +1,18 @@
 const User = require('../models/user');
 const Shoes = require('../models/shoes');
+const HistoryPurchase = require('../models/shoesBought');
+const { response } = require('express');
 class UserController {
     async getCart(req, res, next) {
         const shoesList = await Shoes.find({ userID: req.body.userID });
+        const total = shoesList.reduce((previousValue, currentValue) => {
+            const itemPrice = currentValue.price || 0;
+            const itemQuantity = currentValue.quantity || 0;
+            return previousValue + itemPrice * itemQuantity;
+        }, 0);
         return res.status(200).json({
             shoesList,
-            total: shoesList.reduce(
-                (previousValue, currentValue) => previousValue + currentValue
-            ),
+            total,
         });
     }
     async setCart(req, res, next) {
@@ -20,8 +25,8 @@ class UserController {
         newShoes.save().then((shoes) => res.status(200).json(shoes));
     }
     async cartHistory(req, res) {
-        Shoes.findDelete({ userID: req.body.userID }).then((shoes) =>
-            res.status(200).json(shoes)
+        HistoryPurchase.find({ userID: req.params.userID }).then((shoesList) =>
+            res.status(200).json(shoesList)
         );
     }
 
@@ -32,14 +37,37 @@ class UserController {
     }
 
     async buyItems(req, res) {
-        Shoes.delete({ _id: { $in: req.params.idItems } }).then((shoes) =>
-            res.status(200).json(shoes)
-        );
+        try {
+            console.log(req.body.idItems);
+            const buyItems = await Shoes.find({
+                _id: { $in: req.body.idItems },
+            }).lean();
+            const result = await Shoes.deleteMany({
+                _id: { $in: req.body.idItems },
+            });
+            console.log(result);
+            const itemsWithoutId = buyItems.map((item) => {
+                const { _id, updatedAt, createdAt, ...rest } = item;
+                return rest;
+            });
+            await HistoryPurchase.create(itemsWithoutId).then((result) =>
+                res.status(200).json(result)
+            );
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: 'Error processing purchase.' });
+        }
     }
     async repurchaseItem(req, res) {
-        Shoes.restore({ _id: req.params.idItem }).then((shoes) =>
-            res.status(200).json(shoes)
-        );
+        HistoryPurchase.findById(req.params.id)
+            .lean()
+            .then((shoes) => {
+                const { _id, updatedAt, createdAt, quantity, ...rest } = shoes;
+                const newQuantity = req.body.quantity;
+                HistoryPurchase.create({ newQuantity, ...rest }).then(
+                    (shoesList) => res.status(200).json(shoesList)
+                );
+            });
     }
     async infoUser(req, res, next) {
         User.find({ _id: req.params.userID })

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const shoes = new Schema(
+const shoesBought = new Schema(
     {
         userID: { type: String, required: true },
         size: Number,
@@ -13,4 +13,4 @@ const shoes = new Schema(
         timestamps: true,
     }
 );
-module.exports = mongoose.model('carts', shoes);
+module.exports = mongoose.model('historyPurchase', shoesBought);
