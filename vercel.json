@@ -14,26 +14,3 @@
       }
     ]
   }
-
-  {
-    "version": 2,
-    "builds": [
-      {
-        "src": "./src/index.js",
-        "use": "@vercel/node"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/api/*",
-        "dest": "api/index.js"
-      },
-      {
-        "src": "/(.*)",
-        "dest": "index.js"
-      }
-    ],
-    "env": {
-      "MY_ENV_VARIABLE": "my-env-value"
-    }
-  }
