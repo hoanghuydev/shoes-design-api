@@ -5,7 +5,7 @@ const userRouter = require('./user');
 function route(app) {
     app.use('/v1/auth', authRouter);
     app.use('/user', userRouter);
-    app.use('/test', (req, res) => {
+    app.get('/test', (req, res) => {
         res.send('SERVER ON');
     });
 }
