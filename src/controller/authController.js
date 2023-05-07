@@ -26,7 +26,6 @@ class AuthController {
                 upperCaseAlphabets: false,
                 specialChars: false,
             });
-            console.log(OTP);
             const salt = await bcrypt.genSalt(10);
             const hashedOTP = await bcrypt.hash(OTP, salt);
             const email = req.body.email;
@@ -36,27 +35,34 @@ class AuthController {
             });
 
             await newOTP.save();
-
-            // const mailOptions = {
-            //     from: 'noreply@myapp.com',
-            //     to: email,
-            //     subject: 'OTP for verification',
-            //     text: `Your OTP for verification is: ${OTP}`,
-            // };
-            // try {
-            //     await sgMail.send(mailOptions);
-            //     console.log(`Sent mail to ${email} with OTP ${OTP}`);
-            //     res.status(200).json({
-            //         success: true,
-            //         message: 'OTP sent to email successfully',
-            //     });
-            // } catch (error) {
-            //     console.log(`Error sending email to ${email}: ${error}`);
-            //     res.status(500).json({
-            //         success: false,
-            //         message: 'Error sending OTP to email',
-            //     });
-            // }
+            // Create transporter to send mail
+            let transporter = nodemailer.createTransport({
+                host: 'smtp.gmail.com',
+                port: 587,
+                secure: false,
+                auth: {
+                    user: process.env.EMAIL_ADDRESS,
+                    pass: process.env.EMAIL_PASSWORD,
+                },
+                tls: {
+                    rejectUnauthorized: false, // bỏ qua lỗi "self-signed certificate in certificate chain"
+                },
+            });
+            // Create content for mail
+            let mailOptions = {
+                from: process.env.EMAIL_ADDRESS,
+                to: email,
+                subject: 'Verify email ShoesDesign',
+                text: 'Your OTP is ' + OTP,
+            };
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                    return res.json('Email sent');
+                }
+            });
         } catch (error) {
             res.status(500).json(error);
         }
@@ -65,15 +71,18 @@ class AuthController {
         const email = req.body.email;
         const salt = await bcrypt.genSalt(10);
         const hasedPassword = await bcrypt.hash(req.body.password, salt);
-        // const getOTPFromDB = await otpModel.findOneAndDelete({ email });
-        // const isValidOTP = await bcrypt.compare(req.body.otp, getOTPFromDB.otp);
-        // if (!isValidOTP) {
-        //     console.log(`Email ${email} verified successfully`);
-        //     return res.status(500).json({
-        //         success: false,
-        //         message: 'Error verified email',
-        //     });
-        // }
+        const getOTPFromDB = await otpModel.findOneAndDelete({ email });
+        if (!getOTPFromDB) {
+            return res.status(500).json('Email chưa được đăng ký để xác thực');
+        }
+        const isValidOTP = await bcrypt.compare(req.body.otp, getOTPFromDB.otp);
+        console.log('Valid : ' + isValidOTP);
+        if (!isValidOTP) {
+            return res.status(500).json({
+                success: false,
+                message: 'Error verified email',
+            });
+        }
         const newUser = await new User({
             email: req.body.email,
             password: hasedPassword,

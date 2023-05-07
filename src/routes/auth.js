@@ -5,8 +5,8 @@ const vetifyToken = require('../middleware/vetifyToken');
 router.post('/register/otp', authController.sendOTP);
 router.post('/register', authController.signUp);
 router.post('/login', authController.signIn);
-router.post('/logout', authController.logout);
-router.post('/refresh', authController.refreshTokenKey);
+router.post('/logout', vetifyToken.origin, authController.logout);
+router.post('/refresh', vetifyToken.origin, authController.refreshTokenKey);
 router.patch('/:id/password/forgot', authController.forgotPassword);
 router.patch(
     '/:id/password/edit',
