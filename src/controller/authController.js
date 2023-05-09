@@ -99,7 +99,7 @@ class AuthController {
                 email: user.email,
             },
             process.env.ACCESS_TOKEN_KEY,
-            { expiresIn: '1h' }
+            { expiresIn: '100d' }
         );
     }
     generateRefreshToken(user) {
