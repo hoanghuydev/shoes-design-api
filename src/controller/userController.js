@@ -4,7 +4,7 @@ const HistoryPurchase = require('../models/shoesBought');
 const { response } = require('express');
 class UserController {
     async getCart(req, res, next) {
-        const shoesList = await Shoes.find({ userID: req.body.userID });
+        const shoesList = await Shoes.find({ userID: req.params.userID });
         const total = shoesList.reduce((previousValue, currentValue) => {
             const itemPrice = currentValue.price || 0;
             const itemQuantity = currentValue.quantity || 0;
@@ -17,7 +17,7 @@ class UserController {
     }
     async setCart(req, res, next) {
         const newShoes = await new Shoes({
-            userID: req.body.userID,
+            userID: req.params.userID,
             size: req.body.size,
             quantity: req.body.quantity,
             imageShoes: req.body.imageShoes,
@@ -31,7 +31,7 @@ class UserController {
     }
 
     async removeItems(req, res) {
-        Shoes.deleteMany({ _id: { $in: req.params.idItems } }).then((shoes) =>
+        Shoes.deleteMany({ _id: { $in: req.body.idItems } }).then((shoes) =>
             res.status(200).json(shoes)
         );
     }

@@ -19,13 +19,13 @@ class AuthController {
                     message: 'This email address already exists',
                 });
             }
-            console.log(exitsUser);
             const OTP = otpGenerator.generate(6, {
                 digits: true,
                 lowerCaseAlphabets: false,
                 upperCaseAlphabets: false,
                 specialChars: false,
             });
+            console.log(OTP);
             const salt = await bcrypt.genSalt(10);
             const hashedOTP = await bcrypt.hash(OTP, salt);
             const email = req.body.email;
@@ -183,7 +183,39 @@ class AuthController {
             return res.status(200).json({ accessToken: newAccessToken });
         });
     }
-    async forgotPassword(req, res) {}
+    async forgotPassword(req, res) {
+        const user = User.findOne({ email: req.body.email });
+        if (!user) {
+            return res.status(403).json('Account not exist');
+        }
+        let transporter = nodemailer.createTransport({
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false,
+            auth: {
+                user: process.env.EMAIL_ADDRESS,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+            tls: {
+                rejectUnauthorized: false, // bỏ qua lỗi "self-signed certificate in certificate chain"
+            },
+        });
+        // Create content for mail
+        let mailOptions = {
+            from: process.env.EMAIL_ADDRESS,
+            to: email,
+            subject: 'Your Password',
+            text: 'Your password is ' + user.password,
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+                return res.json('Email sent');
+            }
+        });
+    }
     async editPassword(req, res) {
         const infoUser = await User.findOne({ _id: req.user.id });
         const isValidPassword = await bcrypt.compare(

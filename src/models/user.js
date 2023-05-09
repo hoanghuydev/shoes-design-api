@@ -7,6 +7,11 @@ const user = new Schema(
         name: String,
         age: { type: Number, default: 18 },
         address: { type: String, default: '' },
+        avatarUrl: {
+            type: String,
+            default:
+                'https://top10dienbien.com/wp-content/uploads/2022/10/avatar-cute-11.jpg',
+        },
     },
     { collection: 'user', timestamps: true }
 );

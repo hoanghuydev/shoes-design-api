@@ -13,6 +13,6 @@ router.patch(
     vetifyToken.origin,
     authController.editPassword
 );
-router.delete('/:id/remove', authController.removeUser);
+router.delete('/:id/remove', vetifyToken.forCart, authController.removeUser);
 
 module.exports = router;

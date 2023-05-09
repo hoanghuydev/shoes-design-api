@@ -2,22 +2,26 @@ const express = require('express');
 const router = express.Router();
 const vetifyToken = require('../middleware/vetifyToken');
 const userController = require('../controller/userController');
-router.get('/cart', vetifyToken.forCart, userController.getCart);
-router.post('/cart', vetifyToken.forCart, userController.setCart);
-router.post(
-    '/cart/purchase/history',
-    vetifyToken.forCart,
+router.get('/:userID/cart', vetifyToken.forParam, userController.getCart);
+router.post('/:userID/cart', vetifyToken.forParam, userController.setCart);
+router.get(
+    '/:userID/cart/purchase/history',
+    vetifyToken.forParam,
     userController.cartHistory
 );
-router.delete('/cart/remove', vetifyToken.forCart, userController.removeItems);
+router.delete(
+    '/:userID/cart/remove',
+    vetifyToken.forParam,
+    userController.removeItems
+);
 router.post(
-    '/cart/:userID/buy',
+    '/:userID/cart/buy',
     vetifyToken.forBuyItem,
     userController.buyItems
 );
 router.post(
-    '/cart/:id/repurchase',
-    vetifyToken.forCart,
+    '/:userID/cart/:id/repurchase',
+    vetifyToken.forParam,
     userController.repurchaseItem
 );
 router.get('/profile/:userID', vetifyToken.forParam, userController.infoUser);
