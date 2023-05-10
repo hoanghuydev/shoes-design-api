@@ -144,7 +144,6 @@ class AuthController {
                 httpOnly: true,
                 secure: false,
                 path: '/',
-                sameSite: 'strict',
             });
             const { password, ...others } = user._doc;
             return res.status(200).json({ ...others, accessToken });
@@ -181,7 +180,6 @@ class AuthController {
                 httpOnly: true,
                 secure: false,
                 path: '/',
-                sameSite: 'strict',
             });
             return res.status(200).json({ accessToken: newAccessToken });
         });
