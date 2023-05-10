@@ -73,15 +73,16 @@ class AuthController {
         const hasedPassword = await bcrypt.hash(req.body.password, salt);
         const getOTPFromDB = await otpModel.findOneAndDelete({ email });
         if (!getOTPFromDB) {
-            return res
-                .status(500)
-                .json('Email is not registered for authentication');
+            return res.status(500).json({
+                code: 500,
+                message: 'Email is not registered for authentication',
+            });
         }
         const isValidOTP = await bcrypt.compare(req.body.otp, getOTPFromDB.otp);
         console.log('Valid : ' + isValidOTP);
         if (!isValidOTP) {
             return res.status(500).json({
-                code: 404,
+                code: 500,
                 message: 'Invalid OTP',
             });
         }
