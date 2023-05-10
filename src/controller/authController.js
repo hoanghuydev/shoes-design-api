@@ -73,14 +73,16 @@ class AuthController {
         const hasedPassword = await bcrypt.hash(req.body.password, salt);
         const getOTPFromDB = await otpModel.findOneAndDelete({ email });
         if (!getOTPFromDB) {
-            return res.status(500).json('Email chưa được đăng ký để xác thực');
+            return res
+                .status(500)
+                .json('Email is not registered for authentication');
         }
         const isValidOTP = await bcrypt.compare(req.body.otp, getOTPFromDB.otp);
         console.log('Valid : ' + isValidOTP);
         if (!isValidOTP) {
             return res.status(500).json({
-                success: false,
-                message: 'Error verified email',
+                code: 404,
+                message: 'Invalid OTP',
             });
         }
         const newUser = await new User({
